@@ -4,6 +4,7 @@ import { PORT } from "./config/env.js";
 import authRouter from "./routes/auth.router.js";
 import userRouter from "./routes/user.router.js";
 import subscriptionRouter from "./routes/subscription.route.js";
+import connectDB from "./database/mongodb.js";
 
 const app = express();
 
@@ -14,8 +15,19 @@ app.use("/api/v1/subscriptions", subscriptionRouter);
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 export default app;
